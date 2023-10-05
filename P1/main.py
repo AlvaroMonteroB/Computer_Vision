@@ -1,4 +1,4 @@
-import image_handler as ih
+import P2.image_handler as ih
 
 
 img1=ih.Image("D:\Repositorios\Computer_Vision\P1\IMG_6697.bmp")
