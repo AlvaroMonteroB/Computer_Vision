@@ -4,3 +4,11 @@ P1/C++/result.bmp
 .vscode/settings.json
 P2/__pycache__/image_handler.cpython-311.pyc
 P2/__pycache__/Intefaz_training.cpython-311.pyc
+P2/__pycache__/database_handler.cpython-311.pyc
+.gitignore
+P2/__pycache__/interfaz_program.cpython-311.pyc
+P2/__pycache__/neuron_handler.cpython-311.pyc
+P2/neuron_handler.py
+P2/interfaz_program.py
+P2/database_handler.py
+P2/database/Base1.txt
