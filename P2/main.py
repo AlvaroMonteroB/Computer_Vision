@@ -11,7 +11,7 @@ class weight_vector:
 
 
 
-root_path="D:\Repositorios\Computer_Vision\P2\Weight"
+root_path="Weight\\"
 filenames=os.listdir(root_path)
 while True:
     pesos=list()
@@ -29,17 +29,21 @@ while True:
     image=ih.Image()
     input_image=input("Introduce la ruta de la imagen a analizar")
     image.read_img(input_image,0,48,36)
+    Image_filtered=image.canny(100,300)
     sums=[]
     for struct in pesos:
         name,vector=struct.name,struct.vector
         sum=0
         for i in range(len(vector)):
-            sum+=vector[i]*image.byte[i]
+            if Image_filtered.byte[i]==255:
+                sum+=vector[i]
         sums.append((sum,name))
-    
+    Image_filtered.show_image()
     for result in sums:
         print(result[1]+ " con resultado "+str(result[0]))
-    input()
+    inip=input()
+    if inip==1:
+        exit
             
             
         
