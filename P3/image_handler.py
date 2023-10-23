@@ -33,17 +33,21 @@ class Image:
     def read_img(self,name,mode,height,width):#leer escalando a valores definidos
         self.imagen=cv.imread(name,mode)
         self.imagen=cv.resize(self.imagen,(width,height))
-        self.height,self.width=self.imagen.shape
         if mode==0:
+            self.height,self.width=self.imagen.shape
             self.mode=1
         elif mode==1:
             self.mode=3
+            self.height,self.width,self.mode=self.imagen.shape
         self.byte=self.imagen.tobytes()
 
-    def assign_img(self,input):#Asignamos una nueva imagen
+    def assign_img(self,input,color=False):#Asignamos una nueva imagen
         self.imagen=input
-        self.byte=self.imagen.tobytes()
-        self.height,self.width=self.imagen.shape
+        #self.byte=self.imagen.tobytes()
+        if color:
+            self.height,self.width,self.mode=self.imagen.shape
+        else:
+            self.height,self.width=self.imagen.shape
 
     def show_image(self):
         cv.imshow("imagen",self.imagen)
@@ -60,24 +64,45 @@ class Image:
             self.imagen=np.frombuffer(self.byte, dtype=np.uint8)
             self.imagen=np.reshape(self.imagen, (self.height,self.width, 1))
 
-
-    
-    
-    def convolution(self,kernel):
-        new_matrix=np.zeros((self.height,self.width))
-        kernel_size=kernel.shape[0]
+    def convolution_color(self,kernel):
+        red_channel = self.imagen[:, :, 0]
+        green_channel=self.imagen[:,:,1]
+        blue_channel=self.imagen[:,:,2]
+        red_result=self.convolution(kernel,1,red_channel,1)
+        green_result=self.convolution(kernel,1,green_channel,1)
+        blue_result=self.convolution(kernel,1,blue_channel,1)
+        new_matrix=np.stack((red_result,green_result,blue_result),axis=-1)
+        output=Image()
+        output.assign_img(new_matrix,True)
+        return output
         
-        for j in range(self.height):
-            for i in range(self.width):
-                sum=0
-                for y in range(kernel_size):
-                    for x in range(kernel_size):
-                        imagen_y=j-kernel_size//2+y
-                        imagen_x=i-kernel_size//2+x
-                        if 0 <= imagen_y < self.height and 0 <= imagen_x < self.width:
-                            sum+=self.imagen[imagen_y,imagen_x]*kernel[y,x]
-                            
-                new_matrix[j,i]=(sum//((kernel_size)**2))
+        
+        
+    
+    
+    def convolution(self,kernel,selfmode=0,matrix=0,recursion=0):
+        
+        if self.mode==3 and recursion==0:
+            new_matrix=self.convolution_color(kernel)
+        else:
+            if not isinstance(matrix,np.ndarray):
+                matrix=self.imagen
+            new_matrix=np.zeros((self.height,self.width))
+            kernel_size=kernel.shape[0]
+            
+            for j in range(self.height):
+                for i in range(self.width):
+                    sum=0
+                    for y in range(kernel_size):
+                        for x in range(kernel_size):
+                            imagen_y=j-kernel_size//2+y
+                            imagen_x=i-kernel_size//2+x
+                            if 0 <= imagen_y < self.height and 0 <= imagen_x < self.width:
+                                sum+=matrix[imagen_y,imagen_x]*kernel[y,x]
+                                
+                    new_matrix[j,i]=(sum//((kernel_size)**2))
+        if selfmode:
+            return new_matrix
              
         output=Image()
         output.assign_img(new_matrix)
